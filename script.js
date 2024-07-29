@@ -1,4 +1,3 @@
-
 const gameboard = (function() {
     function cell(value) {
         return value;
@@ -20,9 +19,21 @@ const gameboard = (function() {
         return board;
     }
 
+    const printBoard = () => {
+        const boardWithCellValues = board.map((row) => row.map((cell) => {
+            if (cell) {
+                return cell.symbol
+            }
+            return cell;
+        }))
+        console.log(boardWithCellValues);
+        return boardWithCellValues;
+    };
+
     function makeMove(player, row, column) {
-        if (row < 0 || row > 2 || column < 0 || column > 2 || board[row][column] !== null) {
-            return;
+        if (row < 0 || (rowsAndColumns - 1) > 2 || column < 0 || (rowsAndColumns - 1) > 2 || board[row][column] !== null) {
+            console.log('fart');
+            return true;
         }
         board[row][column] = cell(player); 
     }
@@ -94,8 +105,8 @@ const gameboard = (function() {
     }
 
     newBoard();
-
-    return { getBoard, makeMove, checkForWinner, newBoard };
+    printBoard();
+    return { getBoard, makeMove, checkForWinner, newBoard, printBoard };
 })();
 
 const player = function(name, symbol) {
@@ -124,14 +135,41 @@ const game = (function(playerOne = player("Player One", 'X'), playerTwo = player
         let row = Number(prompt('Row?'));
         let column = Number(prompt('Column?')); 
 
-        gameboard.makeMove(activePlayer, row, column);
+        let currentMove = gameboard.makeMove(activePlayer, row, column)
+        if (currentMove) {
+            return;
+        } 
 
         if ((gameboard.checkForWinner())) {
             winner = gameboard.checkForWinner();
+            console.log(`${winner.name} wins`)
+            return winner;
         } else {
             switchPlayerTurn();
+            console.log(gameboard.printBoard());
         }
     }
 
-    return { getActivePlayer, playRound }
+    return { getActivePlayer, playRound, getWinner }
 })();
+
+const display = (function() {
+    const gameboardDisplay = document.querySelector('.gameboard');
+
+    const updateScreen = () => {
+    gameboard.printBoard().forEach(row => {
+        row.forEach((cell, index) => {
+            const cellButton = document.createElement("button");
+            cellButton.classList.add("cell");
+            cellButton.dataset.column = index
+            cellButton.textContent = cell;
+            gameboardDisplay.appendChild(cellButton)
+        })
+    })
+}
+return { updateScreen }
+})()
+
+game.playRound()
+game.playRound()
+display.updateScreen()
