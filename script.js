@@ -1,0 +1,137 @@
+
+const gameboard = (function() {
+    function cell(value) {
+        return value;
+    }
+
+    const rowsAndColumns = 3;
+    const board = [];
+
+    function newBoard() {
+        for (let i = 0; i < rowsAndColumns; i++) {
+            board[i] = [];
+            for (let j = 0; j < rowsAndColumns; j++) {
+                board[i].push(cell(null));
+            }
+        }
+    }
+
+    function getBoard() {
+        return board;
+    }
+
+    function makeMove(player, row, column) {
+        if (row < 0 || row > 2 || column < 0 || column > 2 || board[row][column] !== null) {
+            return;
+        }
+        board[row][column] = cell(player); 
+    }
+
+    function checkForWinner() {
+        let count = 0;
+        let current;
+        //check diagonals
+        for (let i = 0; i < rowsAndColumns; i++) {
+            if (board[i][i] === current && board[i][i] !== null) {
+                count++  
+            }
+            if (count === (rowsAndColumns - 1)) {
+                return board[i][i];
+            }
+            current = board[i][i];
+        }
+        // check more diagonals
+        count = 0;
+        current = '';
+        for (let i = 0; i < rowsAndColumns; i++) {
+            if (board[i][(rowsAndColumns - 1 - i)] === current && board[i][(rowsAndColumns - 1 - i)] !== null) {
+                count++
+            }
+            if (count === (rowsAndColumns - 1)) {
+                return board[i][(rowsAndColumns - 1 - i)];
+            }
+            current = board[i][(rowsAndColumns - 1 - i)];
+        }   
+        //check rows
+        for (let i = 0; i < rowsAndColumns; i++) {
+            count = 0;
+            current = '';
+            for (let j = 0; j < rowsAndColumns; j++) {
+                if (board[i][j] === current && board[i][j] !== null) {
+                    count++  
+                }
+                if (count === (rowsAndColumns - 1)) {
+                    return board[i][j];
+                }
+                current = board[i][j];
+            }
+        }
+        //check columns
+        for (let i = 0; i < rowsAndColumns; i++) {
+            count = 0;
+            current = '';
+            for (let j = 0; j < rowsAndColumns; j++) {
+                if (board[j][i] === current && board[j][i] !== null) {
+                    count++ 
+                }
+                if (count === (rowsAndColumns - 1)) {
+                    return board[j][i];
+                }
+                current = board[j][i];
+            }
+        }
+        //check for tie
+        const notNullRows = []
+        for (let i = 0; i < rowsAndColumns; i++) {
+            let currentRow = board[i].filter((cellVal) => cellVal !== null);
+            if (currentRow.length === 3) {
+                notNullRows.push(currentRow);
+            }
+            if (notNullRows.length === 3) {
+                return 'Tie';
+            }
+        }
+    }
+
+    newBoard();
+
+    return { getBoard, makeMove, checkForWinner, newBoard };
+})();
+
+const player = function(name, symbol) {
+    return { name, symbol };
+}
+
+const game = (function(playerOne = player("Player One", 'X'), playerTwo = player("Player Two", 'O')) {
+    const players = [playerOne, playerTwo];
+
+    let activePlayer = players[0];
+    const getActivePlayer = () => activePlayer;
+
+    let winner = '';
+    const getWinner = () => winner;
+
+    const switchPlayerTurn = () => {
+        activePlayer = activePlayer === players[0] ? players[1] : players[0];
+    };
+
+    const playRound = () => {
+        if (gameboard.checkForWinner()) {
+            gameboard.newBoard();
+            winner = '';
+        }
+
+        let row = Number(prompt('Row?'));
+        let column = Number(prompt('Column?')); 
+
+        gameboard.makeMove(activePlayer, row, column);
+
+        if ((gameboard.checkForWinner())) {
+            winner = gameboard.checkForWinner();
+        } else {
+            switchPlayerTurn();
+        }
+    }
+
+    return { getActivePlayer, playRound }
+})();
