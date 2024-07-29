@@ -126,14 +126,14 @@ const game = (function(playerOne = player("Player One", 'X'), playerTwo = player
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
     };
 
-    const playRound = () => {
+    const playRound = (row, column) => {
         if (gameboard.checkForWinner()) {
             gameboard.newBoard();
             winner = '';
         }
 
-        let row = Number(prompt('Row?'));
-        let column = Number(prompt('Column?')); 
+        // let row = Number(prompt('Row?'));
+        // let column = Number(prompt('Column?')); 
 
         let currentMove = gameboard.makeMove(activePlayer, row, column)
         if (currentMove) {
@@ -157,19 +157,30 @@ const display = (function() {
     const gameboardDisplay = document.querySelector('.gameboard');
 
     const updateScreen = () => {
-    gameboard.printBoard().forEach(row => {
-        row.forEach((cell, index) => {
-            const cellButton = document.createElement("button");
-            cellButton.classList.add("cell");
-            cellButton.dataset.column = index
-            cellButton.textContent = cell;
-            gameboardDisplay.appendChild(cellButton)
-        })
-    })
-}
-return { updateScreen }
-})()
+        gameboardDisplay.textContent = "";
 
-game.playRound()
-game.playRound()
-display.updateScreen()
+        gameboard.printBoard().forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                const cellButton = document.createElement("button");
+                cellButton.classList.add("cell");
+                cellButton.dataset.rowIndex = rowIndex;
+                cellButton.dataset.colIndex = colIndex;
+                cellButton.textContent = cell;
+                gameboardDisplay.appendChild(cellButton)
+            })
+        })
+    }
+
+    function clickHandlerBoard(e) {
+        const selectedRowIndex = e.target.dataset.rowIndex;
+        const selectedColIndex = e.target.dataset.colIndex;
+        if (!selectedRowIndex || !selectedColIndex) return;
+        
+        game.playRound(selectedRowIndex, selectedColIndex);
+        updateScreen();
+    }
+    
+    gameboardDisplay.addEventListener("click", clickHandlerBoard);
+    
+    updateScreen();
+})()
