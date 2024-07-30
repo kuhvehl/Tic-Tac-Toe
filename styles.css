@@ -36,26 +36,63 @@ body {
 
 .header {
   grid-area: header;
-  place-self: center
+  place-self: center;
+  font-size: 2rem;
+  padding-top: 1rem;
 }
 
 .player-display {
   grid-area: player-display;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  font-weight: bolder;
+  font-size: .8rem;
 }
 
 .player-one {
-place-self: center
+align-self: center;
+justify-self: end;
+width: 55%;
+text-align: center;
 }
 
 .player-two {
-  place-self: center
+  align-self: center;
+  justify-self: start;
+  width: 55%;
+  text-align: center;
+  }
+
+  .current {
+    color: white;
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+    padding: .5rem 1.5rem;
+    border-radius: 10px;
   }
 
 .game-status {
   grid-area: game-status;
-  place-self: center
+  place-self: center;
+  display: grid;
+  gap: 1rem;
+  place-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.game-status button {
+  background-color: transparent;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  padding: .25rem 1rem;
+}
+
+.game-status button:hover {
+  background-color: transparent;
+  border: 1px solid lightgrey;
+  border-radius: 10px;
+  padding: .25rem 1rem;
+  font-weight: bolder;
 }
 
 .gameboard {
@@ -82,4 +119,78 @@ place-self: center
   font-size: 4rem;
   display: grid;
   place-content: center;
+}
+
+dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  width: 300px;
+  max-width: 100%;
+  display: grid;
+  gap: .5rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: 10px;
+  border: none;
+  z-index: 3;
+}
+
+form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem; 
+  margin-bottom: 1.5rem;
+}
+
+dialog input {
+  width: 100%;
+}
+
+::backdrop {
+  background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+  opacity: 1;
+}
+
+dialog .cancel {
+  background-color: #FFCC70;
+  border: none;
+  border-radius: 10px;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+dialog .cancel:hover  {
+  background-color: rgb(255, 205, 112);
+  border: none;
+  border-radius: 10px;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  font-weight: bolder;
+}
+
+dialog .submit  {
+  background-color: #C850C0;
+  border-radius: 10px;
+  border: none;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+dialog .submit:hover  {
+  background-color:#C850C0;
+  border-radius: 10px;
+  border: none;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  font-weight: bolder;
+}
+
+dialog .player-one, dialog .player-two {
+  width: 100%;
+}
+
+dialog label {
+  display: grid;
+  justify-content: start;
 }

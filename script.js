@@ -26,13 +26,11 @@ const gameboard = (function() {
             }
             return cell;
         }))
-        console.log(boardWithCellValues);
         return boardWithCellValues;
     };
 
     function makeMove(player, row, column) {
         if (row < 0 || (rowsAndColumns - 1) > 2 || column < 0 || (rowsAndColumns - 1) > 2 || board[row][column] !== null) {
-            console.log('fart');
             return true;
         }
         board[row][column] = cell(player); 
@@ -105,7 +103,6 @@ const gameboard = (function() {
     }
 
     newBoard();
-    printBoard();
     return { getBoard, makeMove, checkForWinner, newBoard, printBoard };
 })();
 
@@ -113,11 +110,18 @@ const player = function(name, symbol) {
     return { name, symbol };
 }
 
-const game = (function(playerOne = player("Player One", 'X'), playerTwo = player("Player Two", 'O')) {
-    const players = [playerOne, playerTwo];
+const game = function(playerOne = player("Player One", 'X'), playerTwo = player("Player Two", 'O')) {
+    gameboard.newBoard();
+
+    let players = [playerOne, playerTwo];
 
     let activePlayer = players[0];
     const getActivePlayer = () => activePlayer;
+
+    function updatePlayers(newPlayerOne, newPlayerTwo) {
+        players = [newPlayerOne, newPlayerTwo];
+        activePlayer = players[0];
+    }
 
     let winner = '';
     const getWinner = () => winner;
@@ -132,9 +136,6 @@ const game = (function(playerOne = player("Player One", 'X'), playerTwo = player
             winner = '';
         }
 
-        // let row = Number(prompt('Row?'));
-        // let column = Number(prompt('Column?')); 
-
         let currentMove = gameboard.makeMove(activePlayer, row, column)
         if (currentMove) {
             return;
@@ -142,23 +143,30 @@ const game = (function(playerOne = player("Player One", 'X'), playerTwo = player
 
         if ((gameboard.checkForWinner())) {
             winner = gameboard.checkForWinner();
-            console.log(`${winner.name} wins`)
             return winner;
         } else {
             switchPlayerTurn();
-            console.log(gameboard.printBoard());
         }
     }
 
-    return { getActivePlayer, playRound, getWinner }
-})();
+    return { getActivePlayer, playRound, getWinner, updatePlayers }
+};
 
 const display = (function() {
+    let currentGame;
+    let currentPlayer;
     const gameboardDisplay = document.querySelector('.gameboard');
+    const playerOneDiv = document.querySelector('.player-one');
+    const playerTwoDiv = document.querySelector('.player-two');
+    const gameStatusDiv = document.querySelector('.game-status>h2');
+    const addPlayers = document.querySelector(".start-button");
+    const dialog = document.querySelector('dialog');
+    const form = document.querySelector("form");
+    const playerOneInput = document.querySelector('#playerOne')
+    const playerTwoInput = document.querySelector('#playerTwo')
 
     const updateScreen = () => {
         gameboardDisplay.textContent = "";
-
         gameboard.printBoard().forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 const cellButton = document.createElement("button");
@@ -168,15 +176,60 @@ const display = (function() {
                 cellButton.textContent = cell;
                 gameboardDisplay.appendChild(cellButton)
             })
+
+            if (currentGame) {
+                if (currentGame.getWinner()) {
+                    currentGame = ''
+                    return;
+                }
+                currentPlayer = currentGame.getActivePlayer()
+                gameStatusDiv.textContent = `${currentPlayer.name}'s turn`
+            }
         })
+
+        if (currentGame) {
+            if (currentPlayer.symbol === 'X') {
+                playerOneDiv.classList.add('current');
+                playerTwoDiv.classList.remove('current')
+            } else {
+                playerTwoDiv.classList.add('current');
+                playerOneDiv.classList.remove('current')
+            }
+        }
     }
+
+    addPlayers.addEventListener("click", () => {  
+        playerOneInput.value = ''
+        playerTwoInput.value = '' 
+        dialog.showModal();
+    });
+
+    dialog.addEventListener('close', (e) => {
+        if (dialog.returnValue === 'submit') {
+            const playerOneValue = form.playerOne.value;
+            const playerTwoValue = form.playerTwo.value
+
+            currentGame = game(player(playerOneValue, 'X'), player(playerTwoValue, 'O'));
+            playerOneDiv.textContent = `${playerOneValue}: X`;
+            playerTwoDiv.textContent = `${playerTwoValue}: O`;
+            updateScreen();
+        }
+    })
 
     function clickHandlerBoard(e) {
         const selectedRowIndex = e.target.dataset.rowIndex;
         const selectedColIndex = e.target.dataset.colIndex;
-        if (!selectedRowIndex || !selectedColIndex) return;
+        if (!selectedRowIndex || !selectedColIndex || !currentGame) return;
         
-        game.playRound(selectedRowIndex, selectedColIndex);
+        currentGame.playRound(selectedRowIndex, selectedColIndex);
+        if (currentGame.getWinner()) {
+            if (currentGame.getWinner() === 'Tie') {
+                gameStatusDiv.textContent = 'Tie'
+                updateScreen();
+                return   
+            }
+            gameStatusDiv.textContent = `${currentGame.getWinner().name} Wins`;
+        }
         updateScreen();
     }
     

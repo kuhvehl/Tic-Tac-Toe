@@ -15,8 +15,24 @@
         <div class="player-one">Player One: X</div>
         <div class="player-two">Player Two: O</div>
     </div>
-    <div class="game-status">Player Turn Message</div>
-    <div class="start-game"></div>
+    <div class="game-status">
+        <h2></h2>
+        <button class="start-button">Start New Game</button>
+        <dialog>
+            <button class="cancel" form="newGameInfo" value="cancel" formnovalidate>Cancel</button>
+            <form id="newGameInfo" method="dialog">
+                <div class="player-one">
+                    <label for="playerOne">Player One Name:</label>
+                    <input type="text" id="playerOne" name="playerOne" required>
+                </div>
+                <div class="player-two">
+                    <label for="playerTwo">Player Two Name:</label>
+                    <input type="text" id="playerTwo" name="playerTwo" required>
+                </div>
+            </form>
+            <button class="submit" type="submit" form="newGameInfo" value="submit">Submit</button>
+        </dialog>
+    </div>
     <div class="gameboard">
 
     </div>
